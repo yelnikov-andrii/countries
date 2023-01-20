@@ -3,6 +3,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { MyItem } from './MyItem';
 
 export const MyList: React.FC <any> = ({show, selectedCountries, addCountry, removeCountry, filteredCountries}) => {
+  console.log('list rendered')
   return (
     <ListGroup className='form__list'>
       {show === true && selectedCountries.length > 0 ? selectedCountries.map((country: string) => (

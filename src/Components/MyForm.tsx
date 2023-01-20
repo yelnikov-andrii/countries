@@ -11,33 +11,50 @@ export const MyForm: React.FC <any> = ({countries}) => {
   const [selectedCountries, setSelectedCountries] = React.useState<string[]>([]);
   const [show, setShow] = React.useState(false);
 
-  const filterCountries = () => {
+  const filterCountries = React.useCallback(() => {
     const filteredCountries = countries.filter((country: any) => country.toUpperCase().includes(query.toUpperCase()) || country.toLowerCase().includes(query.toLowerCase()));
     return filteredCountries;
-  };
+  }, [query])
 
   const filteredCountries = React.useMemo(() => {
     return filterCountries()
   }, [query]);
 
-  const addCountry = (country: string) => {
-    setSelectedCountries(countries => [...countries, country]);
-  }
+  const addCountry = React.useCallback((country: string) => {
+      setSelectedCountries(countries => [...countries, country]);
+  }, [selectedCountries]);
 
-  const removeCountry = (country: string) => {
+  const removeCountry = React.useCallback((country: string) => {
     setSelectedCountries(countries => [...countries].filter(count => count !== country));
-  }
+  }, [selectedCountries]);
 
-  const saveCountries = () => {
+  const saveCountries = React.useCallback(() => {
     if (selectedCountries.length > 0) {
       localStorage.setItem('selectedCountries', JSON.stringify(selectedCountries))
     }
+  }, [selectedCountries]);
+
+  const clearAll = () => {
+    if (query) {
+      setQuery('');
+    }
+
+    if (selectedCountries.length > 0) {
+      setSelectedCountries([]);
+    }
+
+    if (show === true) {
+      setShow(false);
+    }
+
+    localStorage.clear();
   }
 
   React.useEffect(() => {
     const countriesFromStorage = localStorage.getItem('selectedCountries') ? JSON.parse(localStorage.getItem('selectedCountries') || '{}') : null;
   
     if (countriesFromStorage) {
+      console.log(countriesFromStorage)
       setSelectedCountries(countriesFromStorage);
     }
   }, []);
@@ -56,7 +73,7 @@ export const MyForm: React.FC <any> = ({countries}) => {
         />
         <Form.Group className='form__controls'>
           <MySwitch show={show} setShow={setShow}/>
-          <MyButton setShow={setShow} setSelectedCountries={setSelectedCountries} setQuery={setQuery}/>
+          <MyButton clearAll={clearAll} />
         </Form.Group>
         <MyList 
           show={show} 
@@ -70,6 +87,7 @@ export const MyForm: React.FC <any> = ({countries}) => {
               variant="success" 
               className='form__btn--footer'
               onClick={(e) => {
+                e.preventDefault();
                 saveCountries();
               }}
             >

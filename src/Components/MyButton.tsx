@@ -1,17 +1,14 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 
-export const MyButton: React.FC <any> = ({setQuery, setSelectedCountries, setShow}) => {
+export const MyButton: React.FC <any> = ({clearAll}) => {
   return (
     <Button 
       className='form__btn'
       variant='danger'
       onClick={(e) => {
         e.preventDefault();
-        setQuery('');
-        setSelectedCountries([]);
-        setShow(false);
-        localStorage.clear();
+        clearAll();
       }}
     >
       Clear all
