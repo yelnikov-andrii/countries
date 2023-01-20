@@ -1,9 +1,9 @@
 import React from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { MyItem } from './MyItem';
+import { memo } from 'react';
 
-export const MyList: React.FC <any> = ({show, selectedCountries, addCountry, removeCountry, filteredCountries}) => {
-  console.log('list rendered')
+const MyList: React.FC <any> = ({show, selectedCountries, addCountry, removeCountry, filteredCountries}) => {
   return (
     <ListGroup className='form__list'>
       {show === true && selectedCountries.length > 0 ? selectedCountries.map((country: string) => (
@@ -39,3 +39,4 @@ export const MyList: React.FC <any> = ({show, selectedCountries, addCountry, rem
   );
 };
 
+export default memo(MyList);

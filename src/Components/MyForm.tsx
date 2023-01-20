@@ -1,24 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { MutableRefObject } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { MyButton } from './MyButton';
-import { MyList } from './MyList';
+import  MyList from './MyList';
 import { MySwitch } from './MySwitch';
 
 export const MyForm: React.FC <any> = ({countries}) => {
   const [query, setQuery] = React.useState<string>('');
+  const [appliedQuery, setAppliedQuery] = React.useState('');
   const [selectedCountries, setSelectedCountries] = React.useState<string[]>([]);
   const [show, setShow] = React.useState(false);
 
   const filterCountries = React.useCallback(() => {
-    const filteredCountries = countries.filter((country: any) => country.toUpperCase().includes(query.toUpperCase()) || country.toLowerCase().includes(query.toLowerCase()));
+    const filteredCountries = countries.filter((country: any) => country.toUpperCase().includes(appliedQuery.toUpperCase()) || country.toLowerCase().includes(appliedQuery.toLowerCase()));
     return filteredCountries;
-  }, [query])
+  }, [appliedQuery])
 
   const filteredCountries = React.useMemo(() => {
-    return filterCountries()
-  }, [query]);
+    return filterCountries();
+  }, [appliedQuery]);
 
   const addCountry = React.useCallback((country: string) => {
       setSelectedCountries(countries => [...countries, country]);
@@ -37,6 +38,7 @@ export const MyForm: React.FC <any> = ({countries}) => {
   const clearAll = () => {
     if (query) {
       setQuery('');
+      setAppliedQuery('');
     }
 
     if (selectedCountries.length > 0) {
@@ -54,10 +56,21 @@ export const MyForm: React.FC <any> = ({countries}) => {
     const countriesFromStorage = localStorage.getItem('selectedCountries') ? JSON.parse(localStorage.getItem('selectedCountries') || '{}') : null;
   
     if (countriesFromStorage) {
-      console.log(countriesFromStorage)
       setSelectedCountries(countriesFromStorage);
     }
   }, []);
+
+  let timerId: MutableRefObject<any> = React.useRef();
+
+  const getQuery = React.useCallback((query: string) => {
+    if (timerId.current) {
+      clearTimeout(timerId.current);
+    }
+
+    timerId.current = setTimeout(() => {
+      setAppliedQuery(query);
+    }, 500);
+  }, [query]);
 
   return (
       <Form className='form'>
@@ -66,10 +79,11 @@ export const MyForm: React.FC <any> = ({countries}) => {
           placeholder="Search"
           className="me-2 form__search"
           aria-label="Search"
-          onChange={(e) => {
-            setQuery(e.target.value)
-          }}
           value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            getQuery(e.target.value);
+          }}
         />
         <Form.Group className='form__controls'>
           <MySwitch show={show} setShow={setShow}/>
