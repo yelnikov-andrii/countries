@@ -17,7 +17,7 @@ export const MyForm: React.FC <any> = ({countries}) => {
     return filteredCountries;
   }, [appliedQuery])
 
-  const filteredCountries = React.useMemo(() => {
+  const filteredCountries: any = React.useMemo(() => {
     return filterCountries();
   }, [appliedQuery]);
 
